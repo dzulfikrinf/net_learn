@@ -220,7 +220,7 @@ class AdminController extends Controller
 
     private function processAIAnalysis($student)
     {
-        $apiKey = env('GEMINI_API_KEY');
+        $apiKey = config('services.gemini.api_key') ?? env('GEMINI_API_KEY');
 
         if (!$apiKey) {
             return ['status' => 'error', 'message' => 'API Key Gemini belum disetting di .env!'];

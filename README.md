@@ -92,7 +92,7 @@ Skema database PostgreSQL dirancang terelasi kuat mencakup:
    php artisan key:generate
    ```
 
-   Sesuaikan parameter database di file `.env`:
+   Sesuaikan parameter database dan Gemini AI di file `.env`:
    ```env
    DB_CONNECTION=pgsql
    DB_HOST=127.0.0.1
@@ -100,6 +100,9 @@ Skema database PostgreSQL dirancang terelasi kuat mencakup:
    DB_DATABASE=net-learn
    DB_USERNAME=postgres
    DB_PASSWORD=postgres
+
+   # Dapatkan API key gratis di Google AI Studio (https://aistudio.google.com/)
+   GEMINI_API_KEY=your_gemini_api_key_here
    ```
 
 4. **Buat Database PostgreSQL**

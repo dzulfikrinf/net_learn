@@ -54,7 +54,7 @@ class ChatbotController extends Controller
 
         $userMessage = $request->input('message');
         $stageTitle  = $request->input('stage');
-        $apiKey      = env('GEMINI_API_KEY');
+        $apiKey      = config('services.gemini.api_key') ?? env('GEMINI_API_KEY');
 
         if (!$apiKey) {
             return response()->json(['reply' => "⚠️ DEBUG ENV: API Key tidak terbaca."], 200);
@@ -107,7 +107,7 @@ class ChatbotController extends Controller
 
         $userMessage = $request->input('message');
         $context = $request->input('context_data');
-        $apiKey = env('GEMINI_API_KEY');
+        $apiKey = config('services.gemini.api_key') ?? env('GEMINI_API_KEY');
 
         if (!$apiKey) {
             return response()->json(['reply' => "⚠️ DEBUG ENV: API Key tidak terbaca."], 200);
