@@ -98,6 +98,7 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
 
         // --- Manajemen Lesson (Level) ---
         Route::post('/week/{weekId}/lesson', [LessonController::class, 'store'])->name('admin.lesson.store');
+        Route::post('/week/{weekId}/reorder-lessons', [LessonController::class, 'reorder'])->name('admin.lessons.reorder');
         Route::put('/lesson/{id}', [LessonController::class, 'update'])->name('admin.lesson.update');
         Route::delete('/lesson/{id}', [LessonController::class, 'destroy'])->name('admin.lesson.destroy');
 

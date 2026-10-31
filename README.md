@@ -1,91 +1,139 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# NetLearn — Gamified Network Simulation & Learning Platform
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+[![Laravel](https://img.shields.io/badge/Laravel-12.x-FF2D20?style=flat-square&logo=laravel&logoColor=white)](https://laravel.com)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![Inertia.js](https://img.shields.io/badge/Inertia.js-2.0-9553E9?style=flat-square&logo=inertia&logoColor=white)](https://inertiajs.com)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-336791?style=flat-square&logo=postgresql&logoColor=white)](https://www.postgresql.org)
+[![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-3.x-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
-## About Laravel
+> Platform edukasi interaktif untuk pembelajaran konsep Jaringan Komputer dan Subnetting berbasis gamifikasi. Menghadirkan visualisasi kanvas topologi real-time, modul tantangan bertahap, formula matematika dinamis (KaTeX), serta pelacakan progres dan leaderboard siswa.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🎯 Gambaran Proyek
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Mempelajari dasar jaringan komputer—seperti IP Addressing, CIDR subnetting, netmask, hingga routing topologi—seringkali abstrak dan menyulitkan pemula jika hanya dipelajari melalui buku teks atau slide statis.
 
-## Learning Laravel
+**NetLearn** hadir sebagai media pembelajaran interaktif untuk:
+- Memvisualisasikan perangkat jaringan dan interkoneksi kabel secara modular.
+- Menyediakan tantangan kalkulasi subnetting dengan feedback instan.
+- Mendorong keterlibatan belajar siswa lewat sistem reward gamifikasi (Leveling, XP, Login Streak, dan Leaderboard).
+- Memberikan panel kendali bagi pengajar untuk merancang materi, modul berurutan, dan memantau analitik pemahaman kelas.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🚀 Fitur Utama
 
-## Laravel Sponsors
+- **Interactive Topology Canvas (React Flow)**: Simulasi drag-and-drop perangkat jaringan, penghubungan port kabel, dan pengecekan alur transmisi.
+- **Subnetting Assessment Engine**: Validasi otomatis untuk perhitungan Netmask, Network Address, Broadcast Address, Usable Host Range, dan evaluasi CIDR slash notation (`/24`–`/30`).
+- **Gamification & Engagement Engine**:
+  - Pelacakan perolehan XP dan sistem kenaikan level bertingkat.
+  - Tracking keaktifan harian (*login streak*).
+  - Papan peringkat kelas (*real-time student leaderboard*).
+- **Rich Pedagogical Formatting**:
+  - Rendering formula dan kalkulasi biner/desimal menggunakan **KaTeX**.
+  - Format materi berbasis **Markdown** terstruktur dengan integrasi multimedia.
+- **Teacher & Content Management Dashboard**:
+  - Kurikulum hierarkis: *Course* ➔ *Stage/Week* ➔ *Lesson* ➔ *Interactive Modules*.
+  - Pemantauan metrik keberhasilan siswa via chart interaktif (**ApexCharts**).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 🛠️ Tech Stack & Arsitektur
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+| Layer | Teknologi | Deskripsi |
+| :--- | :--- | :--- |
+| **Backend** | Laravel 12 (PHP 8.2+) | Monolith modern untuk API, routing, autentikasi, dan business logic |
+| **Frontend** | React 18 & Inertia.js 2.0 | Pengalaman SPA reaktif tanpa kompleksitas overhead REST API terpisah |
+| **Database** | PostgreSQL 18 | Penyimpanan data relasional terstruktur (13 model tabel) |
+| **Interactive Canvas** | React Flow | Kanvas interaktif simulasi node topologi jaringan |
+| **Styling & UI** | Tailwind CSS & Framer Motion | Desain modern, clean UI, transisi dinamis & responsive layout |
+| **Visual Telemetry** | ApexCharts | Visualisasi grafik analitik performa belajar siswa |
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📂 Struktur Database
 
-## Code of Conduct
+Skema database PostgreSQL dirancang terelasi kuat mencakup:
+1. `users`: Akun siswa & pengajar, role, total XP, level, dan tracking login.
+2. `courses`, `weeks`, `lessons`, `modules`: Struktur hierarki kurikulum pembelajaran.
+3. `user_progress`: Pelacakan detail tiap modul yang dikerjakan, skor, dan waktu penyelesaian.
+4. `sessions`, `jobs`, `cache`: Manajemen sesi dan antrian sistem Laravel.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## 💻 Panduan Instalasi Lokal
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Prasyarat
+- PHP >= 8.2 (dengan ekstensi `pdo_pgsql` aktif)
+- Composer >= 2.0
+- Node.js >= 18.x & NPM
+- PostgreSQL Server >= 14 (aktif di port default 5432)
 
-## License
+### Langkah-langkah
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
------------------------------------------------------------------------------
+1. **Clone Repository**
+   ```bash
+   git clone https://github.com/dzulfikrinf/net_learn.git
+   cd net_learn
+   ```
 
-1. Persiapan
+2. **Install Dependensi**
+   ```bash
+   composer install
+   npm install
+   ```
 
-- Download dan Extract kodenya.
-- Buka folder di VS Code.
-- Buka Terminal.
+3. **Konfigurasi Environment**
+   Salin berkas konfigurasi `.env.example`:
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-2. Install Library (Wajib) di terminal:
+   Sesuaikan parameter database di file `.env`:
+   ```env
+   DB_CONNECTION=pgsql
+   DB_HOST=127.0.0.1
+   DB_PORT=5432
+   DB_DATABASE=net-learn
+   DB_USERNAME=postgres
+   DB_PASSWORD=postgres
+   ```
 
-- composer install
-- npm install
+4. **Buat Database PostgreSQL**
+   Pastikan database dengan nama `net-learn` sudah dibuat di PostgreSQL instance Anda.
 
-3. Setting Environment File .env biasanya tidak ikut terkirim demi keamanan. run ini di terminal:
+5. **Jalankan Migrasi & Seeder**
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
+   *Seeder akan otomatis menyiapkan user demo pengajar, siswa, serta modul materi awal.*
 
-- cp .env.example .env
-- php artisan key:generate
+6. **Jalankan Server Development**
+   Jalankan server aplikasi di dua terminal terpisah:
+   ```bash
+   # Terminal 1: Backend Server
+   php artisan serve
 
-4. Setting Database
+   # Terminal 2: Frontend Bundler
+   npm run dev
+   ```
 
-Buat database baru di phpmyadmin atau bebas dimana, bernama: net_learn (harus sama dengan settingan di .env).
+   Buka peramban di `http://localhost:8000`.
 
-5. Isi Data (Migrate & Seed) Ini langkah paling penting supaya materi, soal, dan user test muncul di laptop temanmu:
+---
 
-php artisan migrate:fresh --seed
+## 🔑 Akun Demo Bawaan
 
-6. Jalankan Buka dua terminal:
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Guru / Admin** | `guru@netlearn.com` | `password` |
+| **Siswa / Student** | `admin@netlearn.com` | `password` |
 
-- Terminal 1: php artisan serve
-- Terminal 2: npm run dev
+---
 
-Login pakai akun test: admin@netlearn.com / password.
+## 📄 Lisensi
+
+Proyek ini didistribusikan di bawah lisensi [MIT License](LICENSE).

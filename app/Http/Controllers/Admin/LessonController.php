@@ -59,4 +59,23 @@ class LessonController extends Controller
 
         return back()->with('message', 'Level berhasil dihapus bersih!');
     }
+
+    public function reorder(Request $request, $weekId)
+    {
+        $request->validate([
+            'lessons' => 'required|array'
+        ]);
+
+        // Looping semua id level yang dikirim dari React sesuai urutan barunya
+        foreach ($request->lessons as $index => $lessonId) {
+            // Update nomor order, dan perbarui week_id nya (Penting agar bisa cross-stage)
+            Lesson::where('id', $lessonId)->update([
+                'order' => $index + 1,
+                'week_id' => $weekId
+            ]);
+        }
+
+        // Tidak perlu memberikan flash message agar tidak berisik (karena di-hit di background)
+        return back();
+    }
 }

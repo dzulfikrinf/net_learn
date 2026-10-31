@@ -58,26 +58,67 @@ export default function CourseManager({ course, weeks: initialWeeks }) {
     const levelForm = useForm({ title: '' });
 
     // ===========================
-    // LOGIC DRAG & DROP STAGE
+    // LOGIC DRAG & DROP UTAMA
     // ===========================
     const handleOnDragEnd = (result) => {
-        if (!result.destination) return;
+        const { source, destination, type } = result;
+        if (!destination) return;
 
-        // 1. Reorder di Client Side (Biar UI instan berubah)
-        const items = Array.from(weeks);
-        const [reorderedItem] = items.splice(result.source.index, 1);
-        items.splice(result.destination.index, 0, reorderedItem);
+        // 1. JIKA YANG DI-DRAG ADALAH STAGE
+        if (type === 'stage') {
+            const items = Array.from(weeks);
+            const [reorderedItem] = items.splice(source.index, 1);
+            items.splice(destination.index, 0, reorderedItem);
 
-        setWeeks(items);
+            setWeeks(items);
 
-        // 2. Kirim Urutan Baru ke Server (Background Process)
-        const orderedIds = items.map(item => item.id);
-        router.post(route('admin.weeks.reorder', course.id), {
-            weeks: orderedIds
-        }, {
-            preserveScroll: true, // Agar scroll tidak lompat
-            preserveState: true   // Agar state modal dll tidak reset
-        });
+            const orderedIds = items.map(item => item.id);
+            router.post(route('admin.weeks.reorder', course.id), {
+                weeks: orderedIds
+            }, { preserveScroll: true, preserveState: true });
+
+            return;
+        }
+
+        // 2. JIKA YANG DI-DRAG ADALAH LEVEL (LESSON)
+        if (type === 'lesson') {
+            const sourceWeekIndex = weeks.findIndex(w => `lessons-${w.id}` === source.droppableId);
+            const destWeekIndex = weeks.findIndex(w => `lessons-${w.id}` === destination.droppableId);
+
+            const newWeeks = [...weeks];
+
+            if (sourceWeekIndex === destWeekIndex) {
+                // Skenario A: Pindah urutan Level di dalam Stage yang SAMA
+                const lessons = Array.from(newWeeks[sourceWeekIndex].lessons);
+                const [reorderedItem] = lessons.splice(source.index, 1);
+                lessons.splice(destination.index, 0, reorderedItem);
+
+                newWeeks[sourceWeekIndex].lessons = lessons;
+                setWeeks(newWeeks);
+
+                // Kirim ID ke Backend
+                router.post(route('admin.lessons.reorder', newWeeks[sourceWeekIndex].id), {
+                    lessons: lessons.map(l => l.id)
+                }, { preserveScroll: true, preserveState: true });
+
+            } else {
+                // Skenario B: Pindah Level ke Stage yang BERBEDA
+                const sourceLessons = Array.from(newWeeks[sourceWeekIndex].lessons);
+                const destLessons = Array.from(newWeeks[destWeekIndex].lessons);
+
+                const [movedItem] = sourceLessons.splice(source.index, 1);
+                destLessons.splice(destination.index, 0, movedItem);
+
+                newWeeks[sourceWeekIndex].lessons = sourceLessons;
+                newWeeks[destWeekIndex].lessons = destLessons;
+                setWeeks(newWeeks);
+
+                // Kirim data ke Backend (ID Stage Tujuan)
+                router.post(route('admin.lessons.reorder', newWeeks[destWeekIndex].id), {
+                    lessons: destLessons.map(l => l.id)
+                }, { preserveScroll: true, preserveState: true });
+            }
+        }
     };
 
     // ===========================
@@ -185,7 +226,7 @@ export default function CourseManager({ course, weeks: initialWeeks }) {
 
                 {/* --- AREA DRAG & DROP STAGE --- */}
                 <DragDropContext onDragEnd={handleOnDragEnd}>
-                    <Droppable droppableId="stages-list">
+                    <Droppable droppableId="stages-list" type="stage">
                         {(provided) => (
                             <div
                                 className="space-y-8"
@@ -205,7 +246,7 @@ export default function CourseManager({ course, weeks: initialWeeks }) {
                                                 <div className="bg-slate-50 dark:bg-slate-800/50 p-6 flex justify-between items-start border-b border-slate-100 dark:border-slate-800">
                                                     <div className="flex items-start gap-4 w-full">
 
-                                                        {/* HANDLE DRAG (Grip Icon) */}
+                                                        {/* HANDLE DRAG (Grip Icon) UNTUK STAGE */}
                                                         <div
                                                             {...provided.dragHandleProps}
                                                             className="mt-3 text-slate-300 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-400 cursor-grab active:cursor-grabbing transition-colors"
@@ -234,38 +275,67 @@ export default function CourseManager({ course, weeks: initialWeeks }) {
                                                     </button>
                                                 </div>
 
-                                                {/* LIST LEVELS (LESSONS) - TIDAK DRAGGABLE */}
+                                                {/* LIST LEVELS (LESSONS) - SEKARANG DRAGGABLE */}
                                                 <div className="p-6 bg-white dark:bg-slate-900">
-                                                    <div className="space-y-3">
-                                                        {week.lessons && week.lessons.length > 0 ? (
-                                                            week.lessons.map((lesson) => (
-                                                                <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/80 rounded-xl border border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-cyan-500/50 transition duration-300 group gap-4 sm:gap-0">
-                                                                    <div className="flex items-center gap-4">
-                                                                        <div className="text-slate-300 dark:text-slate-500 group-hover:text-net-blue dark:group-hover:text-cyan-400 transition-colors"><FaLayerGroup /></div>
-                                                                        <span className="font-bold text-slate-700 dark:text-slate-200">{lesson.title}</span>
+                                                    <Droppable droppableId={`lessons-${week.id}`} type="lesson">
+                                                        {(providedLesson, snapshotLesson) => (
+                                                            <div
+                                                                className={`space-y-3 p-2 rounded-xl transition-colors ${snapshotLesson.isDraggingOver ? 'bg-slate-50 dark:bg-slate-800/50 border-2 border-dashed border-blue-200 dark:border-cyan-800' : ''}`}
+                                                                {...providedLesson.droppableProps}
+                                                                ref={providedLesson.innerRef}
+                                                            >
+                                                                {week.lessons && week.lessons.length > 0 ? (
+                                                                    week.lessons.map((lesson, lessonIndex) => (
+                                                                        <Draggable key={lesson.id} draggableId={`lesson-${lesson.id}`} index={lessonIndex}>
+                                                                            {(providedDraggable, snapshotDraggable) => (
+                                                                                <div
+                                                                                    ref={providedDraggable.innerRef}
+                                                                                    {...providedDraggable.draggableProps}
+                                                                                    className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50 dark:bg-slate-800/80 rounded-xl border transition duration-300 group gap-4 sm:gap-0 ${
+                                                                                        snapshotDraggable.isDragging
+                                                                                            ? 'border-blue-400 dark:border-cyan-500 shadow-xl scale-[1.02] bg-white dark:bg-slate-800 z-50'
+                                                                                            : 'border-slate-100 dark:border-slate-700 hover:border-blue-200 dark:hover:border-cyan-500/50'
+                                                                                    }`}
+                                                                                >
+                                                                                    <div className="flex items-center gap-4">
+                                                                                        {/* HANDLE DRAG (Grip Icon) UNTUK LEVEL */}
+                                                                                        <div
+                                                                                            {...providedDraggable.dragHandleProps}
+                                                                                            className="text-slate-300 hover:text-slate-600 dark:text-slate-600 dark:hover:text-slate-400 cursor-grab active:cursor-grabbing transition-colors"
+                                                                                        >
+                                                                                            <FaGripVertical />
+                                                                                        </div>
+                                                                                        <div className="text-slate-300 dark:text-slate-500 group-hover:text-net-blue dark:group-hover:text-cyan-400 transition-colors"><FaLayerGroup /></div>
+                                                                                        <span className="font-bold text-slate-700 dark:text-slate-200">{lesson.title}</span>
+                                                                                    </div>
+                                                                                    <div className="flex items-center gap-3 self-end sm:self-auto">
+                                                                                        <Link
+                                                                                            href={route('admin.lesson.modules', lesson.id)}
+                                                                                            className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 rounded-lg text-xs sm:text-sm font-bold hover:bg-net-blue hover:text-white dark:hover:bg-cyan-600 dark:hover:border-cyan-500 dark:hover:text-white transition flex items-center gap-2"
+                                                                                        >
+                                                                                            <FaMapMarkerAlt /> Atur Quest
+                                                                                        </Link>
+                                                                                        <button onClick={() => openEditLevel(lesson)} className="p-2 text-slate-400 hover:text-blue-600 dark:text-slate-500 dark:hover:text-cyan-400 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500 transition-colors">
+                                                                                            <FaPen />
+                                                                                        </button>
+                                                                                        <button onClick={() => deleteLevel(lesson.id)} className="p-2 text-slate-400 hover:text-red-600 dark:text-slate-500 dark:hover:text-red-400 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500 transition-colors">
+                                                                                            <FaTrash />
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            )}
+                                                                        </Draggable>
+                                                                    ))
+                                                                ) : (
+                                                                    <div className="text-center py-6 text-slate-400 dark:text-slate-500 text-sm italic border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-xl">
+                                                                        Belum ada Level di Stage ini. Tarik level ke sini atau buat baru.
                                                                     </div>
-                                                                    <div className="flex items-center gap-3 self-end sm:self-auto">
-                                                                        <Link
-                                                                            href={route('admin.lesson.modules', lesson.id)}
-                                                                            className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 text-slate-600 dark:text-slate-300 rounded-lg text-xs sm:text-sm font-bold hover:bg-net-blue hover:text-white dark:hover:bg-cyan-600 dark:hover:border-cyan-500 dark:hover:text-white transition flex items-center gap-2"
-                                                                        >
-                                                                            <FaMapMarkerAlt /> Atur Quest
-                                                                        </Link>
-                                                                        <button onClick={() => openEditLevel(lesson)} className="p-2 text-slate-400 hover:text-blue-600 dark:text-slate-500 dark:hover:text-cyan-400 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500 transition-colors">
-                                                                            <FaPen />
-                                                                        </button>
-                                                                        <button onClick={() => deleteLevel(lesson.id)} className="p-2 text-slate-400 hover:text-red-600 dark:text-slate-500 dark:hover:text-red-400 bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-500 transition-colors">
-                                                                            <FaTrash />
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                            ))
-                                                        ) : (
-                                                            <div className="text-center py-6 text-slate-400 dark:text-slate-500 text-sm italic border-2 border-dashed border-slate-100 dark:border-slate-800 rounded-xl">
-                                                                Belum ada Level di Stage ini.
+                                                                )}
+                                                                {providedLesson.placeholder}
                                                             </div>
                                                         )}
-                                                    </div>
+                                                    </Droppable>
+
                                                     <button
                                                         onClick={() => openCreateLevel(week.id)}
                                                         className="mt-4 w-full py-3 border-2 border-dashed border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 rounded-xl font-bold hover:border-net-blue dark:hover:border-cyan-500 hover:text-net-blue dark:hover:text-cyan-400 hover:bg-blue-50 dark:hover:bg-cyan-900/20 transition flex items-center justify-center gap-2"
